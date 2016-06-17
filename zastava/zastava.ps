@@ -1,0 +1,331 @@
+%!PS-Adobe-2.0
+%%Creator: Mojca Miklavec
+%%Title: Slovenska zastava
+%%Pages: 2
+%%PageOrder: Ascend
+% %%BoundingBox 0 0 864 432
+%%EndComments
+
+% viri:
+% http://www.uvi.si/slo/slovenija/drzavni-simboli/index.text.html
+% http://www.grey-net.com/fotw/flags/si.html
+% http://www.grey-net.com/fotw/flags/si-const.html
+
+% zastavo razdelimo na 12 * 6 kvadratkov za lazjo orientacijo
+% vsak naj bo velik pol ince (velikost strani je 3870.72 krat 5437.44 pik) 
+
+/page-begin {
+	gsave
+	36 dup scale
+	1 36 div setlinewidth
+} def
+
+/page-end {
+   grestore
+	showpage
+} def
+
+% uradne barve zastave
+	% Modra       C 100 M  60 Y   0 K 10
+	% Rdeca       C   0 M 100 Y 100 K  0
+	% Zlatorumena C   0 M  10 Y 100 K  0
+	% Bela        C   0 M   0 Y   0 K  0
+/si-blue   { 1 0.6 0 0.1 } def
+/si-red    { 0 1   1 0   } def
+/si-yellow { 0 0.1 1 0   } def
+/si-white  { 0 0   0 0   } def
+/si-black  { 0 0   0 1   } def
+% standardna pretvorba v rgb barve
+	% r = 1 - min(1, c+k)
+	% g = 1 - min(1, m+k)
+	% b = 1 - min(1, y+k)
+	% Modra       (0.0, 0.3, 0.9)
+	% Rdeca       (1.0, 0.0, 0.0)
+	% Zlatorumena (1.0, 0.9, 0.0)
+	% Bela        (1.0, 1.0, 1.0)
+
+
+% sirina lokov na zastavi je enaka 1/(2*sqrt(3))
+/W { 1 3 sqrt 2 mul div } def
+
+
+% risanje grba
+/draw-coat-of-arms { 40 dict begin
+
+	% visina grba
+	/height-coat-of-arms {
+		% 349 sqrt 53 sqrt add 2 div 1 3 sqrt div add 3 sub
+		10.558176
+	} def
+
+	% razdalja do sredine grba
+	/center-coat-of-arms {
+		% 349 sqrt 2 div height-coat-of-arms 2 div sub
+		4.0616828
+	} def
+
+	gsave
+		% grb naj bo visok dve enoti
+		2 height-coat-of-arms div dup scale
+		% sredina grba pri klicu funkcije naj bo v "(0,0)",
+		0 center-coat-of-arms neg translate
+		% ceprav je ogrodje grba sicer razdeljen na 8*9 kvadratov,
+		% in izhodisce koordinatnega sistema na sredini spodnje strani mreze
+				
+			% radij gornjega loka je enak r = sqrt(2.5^2 + 9^2)
+			% [sredisce je v (0,0) in gre skozi (-2.5,9)]
+			% /r-upper { 2.5 dup mul 9 dup mul add sqrt } def
+			/r-upper { 349 sqrt 2 div } def
+
+			% lok seka rob mreze pri y-upper = 4^2 + y-upper^2 = r^2
+			% /y-upper { r-upper dup mul 4 dup mul sub sqrt } def
+			/y-upper { 285 sqrt 2 div } def
+			
+			% kot je enak tan(alfa)=4/y-upper
+			/alpha-upper { 4 y-upper atan neg } def
+			% pri notranjem je malenkost vec racunanja:
+			% (4, 1.5) + (r-lower + W)*(-1, -3.5)/sqrt(1^2+3.5^2) + t*(3.5, -1) ==
+			% r-upper(cos(alpha-upper-inner), -sin(alpha-upper-inner))
+			%/alpha-upper-inner { 27.1995 } def
+			/alpha-upper-inner { 23.4599 } def
+			
+			% radij spodnjega loka je enak r=1+2W+sqrt(1^2 + 3.5^2)
+			% [sredisce je v (-1.5,4) in je tangenten na desni zgornji krog]
+			/r-lower { 1 dup mul 3.5 dup mul add sqrt 2 W mul add 1 add } def
+
+			% prvi kot (med navpicnico spodaj in zacetkom loka) je kar tan(alfa)=1.5/sqrt(r^2 - 1.5^2)
+			/x-bottom { r-lower dup mul 1.5 dup mul sub sqrt } def
+			/alpha-lower-from { 1.5 x-bottom atan 180 sub } def
+
+			% drugi pa (med koncem loka in navpicnico zgoraj)
+			% atan(dx/dy)+atan(sqrt((dx^2+dy^2)/r + 1))
+			/dx { 5.5 } def
+			/dy { y-upper 4 sub } def
+			/dtemp { dx dup mul dy dup mul add r-lower dup mul sub sqrt} def
+			/alpha-lower-to {
+				dx dy atan
+				dtemp r-lower atan
+				add neg } def
+			%	-100.05612 } def
+
+			90 rotate
+
+			% rdec ovoj - popravi, da ne bo cez celo
+			newpath
+				% desni lok
+				4 1.5 r-lower alpha-lower-from alpha-lower-to arc
+				% vrh
+				0 0 r-upper alpha-upper dup neg arc
+				% levi lok
+				4 -1.5 r-lower alpha-lower-to neg alpha-lower-from neg arc
+				closepath
+			si-red setcmykcolor
+			fill
+
+			% moder ovoj
+			/r-lower { 1 dup mul 3.5 dup mul add sqrt W add 1 add } def
+			newpath
+				% desni lok
+				4 1.5 r-lower alpha-lower-from alpha-lower-to arc
+				% vrh
+				0 0 r-upper alpha-upper-inner dup neg exch arc
+				% levi lok
+				4 -1.5 r-lower alpha-lower-to neg alpha-lower-from neg arc
+				closepath
+			si-blue setcmykcolor
+			fill
+
+			% bela notranjost
+			/r-lower { 1 dup mul 3.5 dup mul add sqrt 1 add } def
+			/alpha-lower-inner { 1 3.5 atan 90 add neg } def
+
+			%jezero in triglav
+			/c-U { 3 } def
+			/c-L { c-U 6 W mul sub } def
+			newpath
+				%triglav
+				3 -3 moveto
+				5 -1.5 lineto
+				4.2 -0.9 lineto
+				6 0 lineto
+				4.2 0.9 lineto
+				5 1.5 lineto
+				3 3 lineto
+				%jezero - gornji pas
+				c-U  2 1  90 210 arc
+				c-L  1 1  30 -30 arcn
+				c-U  0 1 150 210 arc
+				c-L -1 1  30 -30 arcn
+				c-U -2 1 150 270 arc				
+				closepath
+			si-white setcmykcolor
+			fill
+
+				%najprej potrebujemo presecisce med kroznicama
+				%(4, 1.5, sqrt(1+3.5^2)+1) in (3-k*W, -2, 1), k=1,2,3
+				/alpha-Ur { 137.6659 } def
+				/alpha-UR { 115.9154 } def
+				/alpha-Mr { 155.2894 } def
+				/alpha-MR { 122.3929 } def
+				/alpha-Lr { 170.8467 } def
+				/alpha-LR { 127.9466 } def
+
+			%jezero - vmesni pas
+			newpath
+				%gornji del
+				/c-U { 3 W sub } def
+				
+				c-U -2 1 alpha-Ur neg 150 arcn
+				c-L -1 1  -30  30 arc
+				c-U  0 1 -150 150 arcn
+				c-L  1 1  -30  30 arc
+				c-U  2 1 -150 alpha-Ur arcn
+				
+				%leva stran
+				4 -1.5 r-lower alpha-UR alpha-MR arc
+
+				%spodnji del
+				/c-U { 3 2 W mul sub } def
+
+				c-U  2 1 alpha-Mr -150 arc
+				c-L  1 1 30 -30 arcn
+				c-U  0 1 150 -150 arc
+				c-L -1 1 30 -30 arcn
+				c-U -2 1 150 alpha-Mr neg arc
+
+				%desna stran
+				4 1.5 r-lower alpha-MR neg alpha-UR neg arc
+				
+				closepath
+			si-white setcmykcolor
+			fill
+
+			%jezero - spodnji pas
+			newpath
+				
+				%gornji del
+				/c-U { 3 3 W mul sub } def
+				
+				c-U -2 1 alpha-Lr neg 150 arcn
+				c-L -1 1  -30  30 arc
+				c-U  0 1 -150 150 arcn
+				c-L  1 1  -30  30 arc
+				c-U  2 1 -150 alpha-Lr arcn
+				
+				%leva stran
+				4 -1.5 r-lower alpha-LR alpha-lower-from neg arc
+
+				%desna stran
+				4  1.5 r-lower alpha-lower-from alpha-LR neg arc
+				
+				closepath
+			si-white setcmykcolor
+			fill
+
+			newpath
+			
+			% zvezde
+			% polozaj zvezde je dolocen s preseciscem crte pri y=8.5
+			% in podaljska triglava (-3,3), (-1.5,5)
+			% zunanji premer zvezde sega do x=1.5,
+			% notranji pa je polovica zunanjega
+			/x-star 1.125 def
+			/r-star 0.375 def
+			/draw-star {
+				gsave
+				newpath
+						% zvezda je zdaj velika eno enoto in ima izhodisce v (0,0)
+						translate
+						0.375 dup scale
+						1 0 moveto
+						30 rotate
+
+						% 6-krat dve polovici kraka zvezde
+						6 {
+							0.5 0 lineto
+							30 cos 30 sin lineto
+							60 rotate
+						} repeat
+						
+					closepath
+				si-yellow setcmykcolor
+				fill
+				grestore
+			} def
+			
+			7 0 draw-star
+			8.5  1.125 draw-star
+			8.5 -1.125 draw-star
+
+	grestore
+	
+end } def
+
+% risanje pravokotnika na zastavi
+/draw-flag-rectangle {
+	newpath
+	  0 0 moveto
+	 12 0 rlineto
+	  0 2 rlineto
+	-12 0 rlineto
+	closepath	
+	
+	fill
+	0 2 translate
+} def
+
+% risanje okvirja zastave
+/draw-flag-border {
+	newpath
+	  0 0 moveto
+	 12 0 rlineto
+	  0 6 rlineto
+	-12 0 rlineto
+	closepath
+	stroke
+} def
+
+% risanje zastave
+/draw-flag {
+		  
+	% barve zastave
+	gsave
+		si-red setcmykcolor
+		draw-flag-rectangle
+		si-blue setcmykcolor
+		draw-flag-rectangle
+		si-white setcmykcolor
+		draw-flag-rectangle
+	grestore
+	
+	% okvir zastave
+	gsave
+		draw-flag-border
+	grestore
+	
+	% grb na zastavi
+	gsave
+		% centriranje postavitve grba
+		3 4 translate
+		% risanje grba
+		draw-coat-of-arms
+	grestore
+} def
+
+		
+%%Page: 1 1
+
+page-begin
+	1 dup translate
+	draw-flag
+page-end
+
+%%Page: 2 2
+
+page-begin
+	1 dup translate
+	5 dup scale
+	1 dup translate
+	draw-coat-of-arms
+page-end
+

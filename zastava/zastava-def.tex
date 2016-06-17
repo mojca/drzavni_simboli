@@ -1,0 +1,385 @@
+%input mp-tool;
+
+%color si_yellow, si_blue, si_red, si_white, si_black;
+
+%si-blue   = cmyk(1,0.6,0,0.1);
+%si-red    = cmyk(0,1  ,1,0  );
+%si-yellow = cmyk(0,0.1,1,0  );
+%si-white  = cmyk(0,0  ,0,0  );
+%si-black  = cmyk(0,0  ,0,1  );
+
+%si_blue   = blue;
+%si_red    = red;
+%si_yellow = yellow;
+%si_white  = white;
+%si_black  = black;
+
+\setupcolors[state=start]
+\definecolor[si-blue]   [c=1,m=.6,k=.1]
+\definecolor[si-red]    [m=1,y=1]
+\definecolor[si-yellow] [m=.1,y=1]
+\definecolor[si-white]  [white]
+\definecolor[si-black]  [black]
+
+\setupinteraction
+	[author={Mojca Miklavec},
+	 title={Slovenski grb}]
+
+\startMPinclusions
+
+%linejoin := mitered;
+%linejoin := beveled;
+linecap := butt;
+numeric unit; unit = 1cm;
+numeric linewidth; linewidth = .4pt;
+%numeric borderwidth;
+
+% nariše takšno mrežo kot je v originalni geometrijski definiciji grba
+def draw_basic_grid =
+	drawoptions(withpen pencircle scaled linewidth);
+	% okvir
+	draw unitsquare shifted (-.5,0) xyscaled (8unit,9unit);
+	% navpične črte spodaj
+	for i = -3 upto 3:
+		draw ((i,0)--(i,3)) scaled unit;
+	endfor;
+	% navpične črte zgoraj
+	for i = -3 step 1.5 until 3:
+		draw ((i,3)--(i,9)) scaled unit;
+	endfor;
+	% vodoravne črte v sredini
+	for i = 3 upto 6:
+		draw ((-3,i)--(3,i)) scaled unit;
+	endfor;
+	
+	drawoptions();
+enddef;
+
+%------------------%
+% Zgornji rob grba %
+%------------------%
+% krožni lok s središčen v (0,0), ki gre skozi točko (2,9)
+path arc_upper;
+arc_upper =
+	fullcircle scaled 2(2++9)  % radij je enak dolžini vektorja (2,9)
+	cutbefore ((4,0)--(4,9))   % odreži krog pred desnim robom
+	cutafter ((-4,0)--(-4,9)); % odreži krog za levim robom
+
+
+% levi konec zgornjega krožnega loka
+pair arc_upper.l; arc_upper.l = llcorner arc_upper;
+% desni konec zgornjega krožnega loka
+pair arc_upper.r; arc_upper.r = lrcorner arc_upper;
+% pomožna črta, ki nakazuje velikost zgornjega krožnega loka
+path arc_upper.helpline; arc_upper.helpline = ((0,0)--(2,9));
+
+%---------------------%
+% Spodnja robova grba %
+%---------------------%
+%
+% levi in desni spodnji del krožnega loka:
+% - 0: notranji (morje)
+% - 1: srednji
+% - 2: zunanji
+path arc_lower.l[]; pair arc_lower.l.c;
+path arc_lower.r[]; pair arc_lower.r.c;
+% Na spodnji strani imamo tri krožne loke. Zunanji predstavlja rob grba,
+% srednji meji na rdečo in modro, notranji pa na modro in belo.
+%
+% Krožni loki imajo središče v (-1.5,4) in (1.5,4).
+% Notranji krožni lok je tangenten na zgornjo levo (-2,3; 1)
+% oz. zgornjo desno (2,3; 1) krožnico, ki oblikuje valove,
+% zato je radij tega loka 1 + sqrt(3.5^2+1^2).
+
+arc_lower.l.c = ( 1.5,4);
+arc_lower.r.c = (-1.5,4);
+
+% Pomembna količina, ki določa razdalje med valovi in razdalje v robu grba,
+% je določena takole:
+% - na premico y = 3 skiciramo tri enotske krožnice s središči v
+%   (-2,3), (0,3) in (2,3)
+% - tik pod njimi skiciramo še dve kročnici, ki se jih tesno dotikata
+% - skozi štiri dotikališča med spodnjimi in zgornjimi krožnicami
+%   potegnemo novo premico (torej y = 3 - sqrt(3)/2)
+% - tretjina razdalje med obema premicama je ena enota, recimo ji 'd',
+%   d = 1 / 2*sqrt(3)
+%
+% 'd' je zdaj razdalja med posameznimi spodnjimi krožnimi loki
+% ter razdalja med valovi.
+
+numeric d; d = .5/sqrt(3);
+
+for i = 0 upto 2:
+	arc_lower.l[i] =
+		fullcircle rotated 180 % only a temporary cut to the left
+		scaled 2(d*i+1+(3.5++1)) shifted arc_lower.l.c
+		cutafter ((0,0)--(0,-1));
+%	arc_lower.r[i] =
+%		fullcircle
+%		scaled 2(d*i+1+(3.5++1)) shifted arc_lower.r.c
+%		cutbefore ((0,0)--(0,-1));
+endfor;
+
+% Zunanji in srednji krožni lok na vrhu tangentno prehajata v ravno črto.
+pair border.l[].t, border.l[].b;
+pair border.r[].t, border.r[].b;
+path border.l[]  , border.r[]  ;
+
+% vrh levega zunanjega roba
+border.l[2].t = arc_upper.l;
+% dno levega zunanjega roba
+border.l[2].b =
+	% premer kroga je enak razdalji med levim koncem gornjega loka
+	% in srediscem spodnjega levega loka
+	fullcircle scaled (arclength (arc_upper.l--arc_lower.l.c))
+	% njegovo sredisce je ravno med tema dvema tockama
+	shifted .5[arc_upper.l,arc_lower.l.c]
+	% presecisce med tem krogom in levim spodnjim lokom je tocka
+	intersectionpoint arc_lower.l[2];
+% levi zunanji rob
+border.l[2] = border.l[2].t--border.l[2].b;
+% popravi zunanji levi spodnji lok (odrezi presezek)
+arc_lower.l[2] := arc_lower.l[2] cutbefore border.l[2].b;
+% izracunaj dno levega notranjega roba
+border.l[1].b = arc_lower.l[1] intersectionpoint (arc_lower.l.c--border.l[2].b);
+% popravi srednji levi spodnji lok (odrezi presezek)
+arc_lower.l[1] := arc_lower.l[1] cutbefore border.l[1].b;
+
+border.l[1].t =
+	% vzporednica levemu zunanjemu robu skozi spodnjo tocko
+	(origin--(border.l[2].t-border.l[2].b)) scaled 2 shifted border.l[1].b
+	% presecisce z zgornjim robom
+	intersectionpoint arc_upper;
+% levi notranji rob
+border.l[1] = border.l[1].t--border.l[1].b;
+
+%================%
+% DESNA POLOVICA %
+%================%
+% vse na desni je samo kopija tistega na levi desni robovi so samo kopija levih
+
+% desna ravna robova
+for i=1 upto 2:
+	border.r[i]   = reverse border.l[i]   reflectedabout ((0,0),(0,1));
+	border.r[i].t =         border.l[i].t reflectedabout ((0,0),(0,1));
+	border.r[i].b =         border.l[i].b reflectedabout ((0,0),(0,1));
+endfor;
+
+% desni spodnji krozni loki
+for i=0 upto 2:
+	arc_lower.r[i] = reverse arc_lower.l[i] reflectedabout ((0,0),(0,1));
+endfor;
+
+% 2 - zunanji (rdeci) obris grba
+% 1 - notranji (modri) obris grba
+path border[];
+border[0] = arc_lower.l[0] -- arc_lower.r[0];
+
+border[1] = arc_upper cutbefore border.r[1].t cutafter border.l[1].t --
+	arc_lower.l[1] -- arc_lower.r[1] -- cycle;
+
+border[2] = arc_upper cutbefore border.l[1].t -- arc_lower.l[2] --
+	arc_lower.r[2] -- arc_upper cutafter border.r[1].t --
+	(reverse border[1] cutafter border.l[1].t) -- cycle;
+
+%tertiarydef a intersection_join b =
+% begingroup save t_;
+%  (t_1,t_2)=a intersectiontimes b; a.sub(0,t_1)&&b.sub(t_2,infinity)
+% endgroup
+%enddef;
+
+% Triglav
+
+% kroznice, ki oblikujejo valove
+% 1 0 4
+%  2 3
+path circle_waves[]; pair circle_waves.c[];
+% gornji sredinski krog
+circle_waves[0] = fullcircle scaled 2 shifted (0,3);
+for i = 1 upto 4:
+	circle_waves.c[i] = dir(120+60i) scaled 2 shifted (0,3);
+	circle_waves[i] = fullcircle scaled 2 shifted circle_waves.c[i];
+endfor;
+
+% del enotske kroznice med kotoma a in b
+vardef unitcircle_arc(expr a, b) =
+%	(fullcircle scaled 2 cutbefore (origin--dir(a)) cutafter (origin--dir(b)))
+	((fullcircle scaled 2 cutafter (origin--dir(b-a))) rotated a)
+enddef;
+
+path waves.model[], waves.top, waves.mid, waves.bot;
+% gornji val
+waves.model[0] =
+	unitcircle_arc(180,-60) shifted (-2,0) ..
+	reverse (unitcircle_arc(60,120) shifted 2dir(-120)) ..
+	unitcircle_arc(-120,-90);
+waves.model[0] := (waves.model[0] .. reverse waves.model[0] reflectedabout ((0,0),(0,1))) shifted (0,3);
+% srednji val (podaljšani gornji val) v položaju zgornjega vala
+% ena enota, ki se bo kopirala dalje
+path waves.model.template;
+waves.model.template = ( reverse (
+	unitcircle_arc(90,120) shifted 2dir(-60) ..
+	(reverse (unitcircle_arc(-120,-60))) ..
+	(unitcircle_arc(60,90) shifted 2dir(-120))
+));
+	
+waves.model.template :=
+	(waves.model.template) shifted (-2,3) ..
+	waves.model.template shifted ( 0,3) ..
+	waves.model.template shifted ( 2,3);
+
+for i=1 upto 3:
+	waves.model[i] = (waves.model.template shifted (0,-i*d));
+endfor;
+
+path mountain.l, mountain.r, mountain.m;
+	% levi vrh Triglava
+	mountain.l = ((0,3)--(-1.5,5)--(-3,3));
+	% srednji vrh Triglava
+	mountain.m = ((1.5,3)--(0,6)--(-1.5,3));
+	% desni del Triglava
+	mountain.r = mountain.l shifted (3,0);
+	% sestavljeni Triglav
+	waves.top =
+		(mountain.r cutafter mountain.m)--
+		(mountain.m cutbefore mountain.r cutafter mountain.l)--
+		(mountain.l cutbefore mountain.m)--
+		waves.model[0]--
+		cycle;
+
+	waves.mid = buildcycle (
+		arc_lower.l[0],
+		waves.model[2],
+		arc_lower.r[0],
+		reverse waves.model[1]);
+	waves.bot = buildcycle ((reverse border[0]), (waves.model[3]));
+
+%========%
+% ZVEZDE %
+%========%
+% 1 2
+%  0
+path star[], star[].bigcirc, star[].smallcirc, star.model;
+pair star[].c;
+% premer zunanje kroznice okrog zvezde
+numeric star.r; star.r = .45;
+
+% sredisci zvezd 0 in 2 lezita na podaljsku levega pobocja Triglava
+star[0].c = whatever[(-3,3),(-1.5,5)];
+star[2].c = whatever[(-3,3),(-1.5,5)];
+% sredisci zvezd 0 in 1 lezita na podaljsku desnega pobocja Triglava
+star[0].c = whatever[( 3,3),( 1.5,5)];
+star[1].c = whatever[( 3,3),( 1.5,5)];
+
+% zvezdi 1 in 2 sta na isti visini
+ypart star[1].c = ypart star[2].c;
+xpart star[2].c + star.r = 1.5;
+
+% model zvezde
+star.model = (
+	for i=0 upto 11:
+		(i mod 2 + 1)*dir(i*30) --
+	endfor cycle ) scaled .5star.r;
+
+% model zvezde, premaknjen v pravo sredisce
+for i=0 upto 2:
+	star[i] = star.model shifted star[i].c;
+	% zunanji in notranji krog, ki obkrozata zvezde
+	star[i].bigcirc = fullcircle scaled 2star.r shifted star[i].c;
+	star[i].smallcirc = fullcircle scaled star.r shifted star[i].c;
+endfor;
+
+
+
+%def draw_coa_bw(expr colblack, colwhite) =
+%	fill border[2] scaled unit withcolor colwhite;
+%	fill border[1] scaled unit withcolor colblack;
+%	for i=0 upto 2:
+%		fill star[i] scaled unit withcolor colwhite;
+%	endfor;
+%	fill waves.top scaled unit withcolor colwhite;
+%	fill waves.mid scaled unit withcolor colwhite;
+%	fill waves.bot scaled unit withcolor colwhite;
+%enddef;
+
+picture coa;
+
+
+\stopMPinclusions
+
+\starttext
+\startMPpage
+%----------------------%
+% geometrijsko pravilo %
+%----------------------%
+%beginfig(1);
+	drawoptions(withpen pencircle linewidth);
+	draw_basic_grid;
+	draw arc_upper scaled unit;
+%	draw arc_lower.l[0] scaled unit;
+	draw arc_lower.l[1] scaled unit;
+	draw arc_lower.l[2] scaled unit;
+%	draw arc_lower.r[0] scaled unit;
+	draw arc_lower.r[1] scaled unit;
+	draw arc_lower.r[2] scaled unit;
+
+	draw mountain.l scaled unit;
+	draw mountain.m scaled unit;
+	draw mountain.r scaled unit;
+%	draw mountain scaled unit;
+
+	for i=0 upto 4:
+		draw circle_waves[i] scaled unit;
+	endfor;
+
+	draw arc_upper.helpline scaled unit dashed evenly;
+	% podaljski gora proti zvezdam
+	draw ((3,3)--(-1.5,9)) scaled unit dashed evenly;
+	draw ((-3,3)--(1.5,9)) scaled unit dashed evenly;
+	% spodnji loki
+	draw (((1.5,4)--(-5.5,2)) cutafter arc_lower.l[2]) scaled unit dashed evenly;
+	draw border.l[2] scaled unit;
+	draw border.l[1] scaled unit;
+	draw border.r[2] scaled unit;
+	draw border.r[1] scaled unit;
+	
+	% zvezde
+	for i=0 upto 2:
+		% veliki in mali rob
+		draw star[i].bigcirc scaled unit;
+		draw star[i].smallcirc scaled unit;
+		% zvezda
+		draw star[i] scaled unit;
+	endfor;
+
+	draw waves.bot scaled unit;
+	draw waves.mid scaled unit;
+
+	draw ((-3,3)--(3,3)) shifted (0,-1d) scaled unit;
+	draw ((-3,3)--(3,3)) shifted (0,-2d) scaled unit;
+	draw ((-3,3)--(3,3)) shifted (0,-3d) scaled unit;
+
+%	draw (origin--dir(-120)) shifted (-2,3-d) scaled unit;
+
+%endfig;
+\stopMPpage
+
+%------------%
+% barvni grb %
+%------------%
+\startMPpage
+%beginfig(2);
+	fill border[2] scaled unit withcolor \MPcolor{si-red};
+	fill border[1] scaled unit withcolor \MPcolor{si-blue};
+	for i=0 upto 2:
+		fill star[i] scaled unit withcolor \MPcolor{si-yellow};
+	endfor;
+	unfill waves.top scaled unit;
+	unfill waves.mid scaled unit;
+	unfill waves.bot scaled unit;
+
+	coa := currentpicture;
+%endfig;
+\stopMPpage
+\stoptext
+

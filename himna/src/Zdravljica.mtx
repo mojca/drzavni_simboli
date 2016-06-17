@@ -1,0 +1,48 @@
+Title: Zdravljica
+Part:  Slovenska Himna
+Poet: France Prešeren
+Composer: Stanko Premrl
+Meter: 4/4
+Sharps: 1
+Space: 3 10 20
+PMX: w185m Ar Iiclg0t116
+Pages: 1
+Systems: 6
+%Bars/line: 4
+Size: 20
+Style: Singer
+%%\input bachotexmtx
+
+%%\\\stafftopmarg6\Interligne\staffbotmarg4\Interligne\
+   d4 | g8.g f f e4 f8 f
+L: Ži-ve naj vsi na-ró-di, ki 
+
+   d8.d e e b4 c d2.d
+L: hre-pe-né do-ča-kať dan, da 
+
+   g4.g a4 b ( b a ) g f
+L: ko-der son-ce ho-di, pre-
+
+   f8.e ds e a4 ( g8 e ) d2.r
+L: pir iz sve-ta bo pre-gnan,
+
+   d4 e c2 
+L: da ro-jak
+
+   b4 d g.g
+L: prost bo vsak, ne
+
+   f4.f e4 e d cs d2
+L: vrag, le so-sed bo me-jak!
+
+   d4 e c2 
+L: da ro-jak
+
+   b4 d g.g
+L: prost bo vsak, ne
+
+   g4 g g g ( g2 f4 ) e 
+L: vrag, le so-sed bo, ne 
+
+   d8 c+ b a d4 f- g2d
+L: vrag, le so-sed bo me-jak!

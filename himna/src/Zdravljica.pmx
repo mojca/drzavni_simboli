@@ -1,0 +1,87 @@
+---
+\def\mtxversion{0.60d}
+\def\mtxdate{<11 October 2008>}
+\input mtx
+\input bachotexmtx
+\mtxComposerLine{France Prešeren}{Stanko Premrl}
+\mtxTitleLine{Zdravljica}
+---
+1 -1 1 4 4 4 4  1.00000 1 1 6 20 0
+
+0
+./
+\\mtxStaffBottom{3}\
+\\mtxSetSize{1}{\mtxNormalSize}\
+Ti
+Slovenska Himna
+Tt
+\mtxTitle
+Tc
+\mtxPoetComposer
+w185m Ar Iiclg0t116
+% Paragraph 2 line 16 bar 0
+\\\stafftopmarg6\Interligne\staffbotmarg4\Interligne\
+\\\mtxSetLyrics{11}{Ži-ve naj vsi na-ró-di, ki }\
+\\\mtxAssignLyrics{1}{11}\
+d44 ga8d ga1 fa8 fa8 e4 fa8 fa8 /
+
+% Paragraph 3 line 20 bar 2
+\\\mtxSetLyrics{11}{hre-pe-né do-ča-kať dan, da }\
+da8d da1 ea8 ea8 b4 c4 /
+
+%Bar 3
+d2d d4 /
+
+% Paragraph 4 line 23 bar 4
+\\\mtxSetLyrics{11}{ko-der son-ce ho-di, pre-}\
+g4d ga8 a4 b4 /
+
+%Bar 5
+(S \mtxBM\ b4 \mtxEM\ a4 )S g4 f4 /
+
+% Paragraph 5 line 26 bar 6
+\\\mtxSetLyrics{11}{pir iz sve-ta bo pre-gnan,}\
+fa8d ea1 da8s ea8 a4 (S \mtxBM\ g8 \mtxEM\ e8 )S /
+
+%Bar 7
+d2d r4 /
+
+% Paragraph 6 line 29 bar 8
+\\\mtxSetLyrics{11}{da ro-jak}\
+d4 e4 c2 /
+
+% Paragraph 7 line 32 bar 9
+\\\mtxSetLyrics{11}{prost bo vsak, ne}\
+b4 d4 g4d ga8 /
+
+% Paragraph 8 line 35 bar 10
+\\\mtxSetLyrics{11}{vrag, le so-sed bo me-jak!}\
+f4d fa8 e4 e4 /
+
+%Bar 11
+d4 c4s d2 /
+
+% Paragraph 9 line 38 bar 12
+\\\mtxSetLyrics{11}{da ro-jak}\
+d4 e4 c2 /
+
+% Paragraph 10 line 41 bar 13
+\\\mtxSetLyrics{11}{prost bo vsak, ne}\
+b4 d4 g4d ga8 /
+
+% Paragraph 11 line 44 bar 14
+\\\mtxSetLyrics{11}{vrag, le so-sed bo, ne }\
+g4 g4 g4 g4 /
+
+%Bar 15
+(S \mtxBM\ g2 \mtxEM\ f4 )S e4 /
+
+% Paragraph 12 line 47 bar 16
+\\\mtxSetLyrics{11}{vrag, le so-sed bo me-jak!}\
+da8 ca8+ ba8 aa8 d4 f4- /
+
+%Bar 17
+m3/4/0/0
+g2d /
+
+% Coded by M-Tx
